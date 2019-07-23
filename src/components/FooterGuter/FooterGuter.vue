@@ -45,7 +45,7 @@
     #footer
         width 750px
         height 98px
-       
+
         display flex
         justify-content space-around
         position fixed
@@ -53,13 +53,15 @@
         bottom 0px
         background pink
         z-index 5
+        align-items center
         .home
-            width 48px
+            width 20%
             height 71px
 
             display flex
-            margin-top 16px
+            /*margin-top 16px*/
             flex-direction column
+
             align-items center
             .iconfont
 

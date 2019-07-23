@@ -6,3 +6,8 @@
         //上面会禁止全部的滚动条    下面的可以有一个滚动条（可以自己选择方向）
         overflow-y：auto；
     }
+
+2、 undefined 报错：
+            如 a.b
+        如果是报错误undefined，就代表a为undefined。
+        如果是consoe.log打印出来a.b  undefined 那么是b不存在。

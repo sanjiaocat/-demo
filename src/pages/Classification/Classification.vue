@@ -18,15 +18,18 @@
            </div>
            <!--右侧辅导航列表-->
            <div class="list-right">
-               <div class="list-rightHeader">
-                   <img src="https://yanxuan.nosdn.127.net/cb225335d4a438564040f00b448e8db8.png?imageView&thumbnail=0x196">
+               <div class="list-rightWrap">
+                   <div class="list-rightHeader">
+                       <img src="https://yanxuan.nosdn.127.net/cb225335d4a438564040f00b448e8db8.png?imageView&thumbnail=0x196">
+                   </div>
+                   <ul class="list-rightList" v-if="categoryList">
+                       <li class="list-rightItem" v-for="subCate in categoryList[0].subCateList" :key="subCate.id">
+                           <img :src="subCate.wapBannerUrl">
+                           <div class="list-rightItemText">{{subCate.name}}</div>
+                       </li>
+                   </ul>
                </div>
-               <ul class="list-rightList">
-                   <li class="list-rightItem" v-for="subCate in categoryList[0].subCateList" :key="subCate.id">
-                       <img :src="subCate.wapBannerUrl">
-                       <div class="list-rightItemText">{{subCate.name}}</div>
-                   </li>
-               </ul>
+
            </div>
 
        </div>
@@ -37,7 +40,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-    import {mapState} from 'vuex'
+    import {mapState} from 'vuex';
+    import Bscroll from 'better-scroll';
   export default{
       data(){
           return{
@@ -46,7 +50,14 @@
       },
       //获取更新第二页导航数据
       mounted(){
-          this.$store.dispatch('getCategoryList')
+          this.$store.dispatch('getCategoryList').then(res =>{
+              let wrapper = document.querySelector('.list-right')
+              let wrapper2 = document.querySelector('.list-left')
+              new Bscroll(wrapper)
+              new Bscroll(wrapper2)
+          })
+
+
 
       },
 
@@ -67,16 +78,22 @@
         height 100%
         /*头部标题*/
         .homeSearch
+            position relative
             width 750px
             height 88px
-            padding 0 30px
+            padding 15px 30px
+            border-bottom 1px solid lightgray
             box-sizing border-box
+            background white
+
+            z-index 5
             .search
                 width 690px
                 height 56px
                 background #ededed
                 text-align center
                 line-height 56px
+
                 .searchi
                     display inline-block
                     width 28px
@@ -89,7 +106,8 @@
                     font-size 28px
                     color #666
 
-            border-bottom 1px solid lightgray
+
+
 
         .classficationList
             width 100%
@@ -97,9 +115,9 @@
             display flex
             .list-left
                 width 162px
-
+                height 1000px
                 /*height 100%*/
-                height 500px
+
                 .left-listWrap
                     width 100%
 
@@ -120,9 +138,9 @@
 
 
             .list-right
-                background yellow
+                /*background yellow*/
                 width 528px
-                height 100%
+                height 1100px
                 box-sizing border-box
                 padding-top 30px
 
