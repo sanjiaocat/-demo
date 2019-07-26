@@ -1,6 +1,7 @@
 import homeData from './homeData.json';
 import category from './category.json';
 import categoryList from './categoryList.json';
+import FindTuijian from './findTj.json';
 
 import Mock from 'mockjs';
 
@@ -19,4 +20,9 @@ Mock.mock('/category',{
 Mock.mock('/categoryList',{
     code:0,
     data:categoryList
+});
+
+Mock.mock('/findTj',{
+    code:0,
+    data:FindTuijian
 });

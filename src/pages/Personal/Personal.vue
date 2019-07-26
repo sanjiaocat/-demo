@@ -10,7 +10,7 @@
         </div>
 
        <!--选择登录方式界面-->
-       <div class="personalWrap" v-if="!isShowPhone && !isShowEmail">
+       <div class="personalWrap" v-if="!isShowPhone && !isShowEmail && !isShowRegistered">
            <!--背景图-->
            <div class="personalImgWrap">
                <div class="personalImg">
@@ -26,7 +26,7 @@
 
                    <span>邮箱号码登录</span>
                </div>
-               <div class="zhuce">手机号快速注册 > </div>
+               <div class="zhuce" @click="showRegistered">手机号快速注册 > </div>
            </div>
        </div>
 
@@ -39,9 +39,10 @@
 
            <!--手机号登录界面-->
            <div class="phoneLoginInput" v-if="isShowPhone">
-               <input type="text" placeholder="请输入手机号">
+               <input type="text" placeholder="请输入手机号" @blur="loseBlur11" v-model="value" @focus="getBlur22">
                <input type="text" placeholder="请输入验证码">
-               <div class="phoneLoginGet">获取验证码</div>
+               <div class="yanzhengText" v-if="isShowYanzhengPhone">手机号格式不正确</div>
+               <button class="phoneLoginGet" v-bind:disabled="dis" @click="getYanzheng">{{dis?`${time}已发送验证码`:'获取验证码'}}</button>
                <div class="phoneLoginText">
                    <span>遇到问题？</span>
                    <span>使用密码验证登录</span>
@@ -56,9 +57,9 @@
            <!--邮箱登录界面-->
 
            <div class="phoneLoginInput" v-if="isShowEmail">
-               <input type="text" placeholder="请输入邮箱账号">
+               <input type="text" placeholder="请输入邮箱账号" @blur="loseEmailBlur" v-model="emailValue" @focus="getBlur22">
                <input type="text" placeholder="请输入密码">
-
+               <div class="yanzhengText" v-if="isShowYanzhengPhone">邮箱格式不正确</div>
                <div class="phoneLoginText">
                    <span>注册账户</span>
                    <span>忘记密码</span>
@@ -78,16 +79,33 @@
        </div>
 
 
+       <!--手机号快速注册-->
+       <Registered v-if="isShowRegistered"/>
+
    </div>
 
 </template>
 
 <script type="text/ecmascript-6">
+    import Registered from './Registered.vue';
   export default{
+      name:'Personal',
+      //注册注册子组件
+      components:{Registered},
       data(){
           return{
               isShowPhone:false,         //定义手机登录状态
-              isShowEmail:false          //定义手机登录状态
+              isShowEmail:false,          //定义手机登录状态
+              isShowRegistered:false,            //定义手机注册界面的状态
+              regPhone:/^1[3456789][0-9]{9}$/,      //手机验证得正则表达式
+              value:'',                            //手机号得初始值
+              regEmail:/^([a-zA-Z]|[0-9])([\w|\-])+@([a-zA-Z0-9]){2,5}\.([a-zA-Z]{2,4})$/,  //邮箱正则
+              emailValue:'',                        //邮箱得初始值
+              isShowYanzhengPhone:false,            //验证手机提示得状态
+
+              dis:false,                            //验证按钮是否可用
+              time:10                               //发送验证码得时间
+
           }
       },
 
@@ -96,23 +114,66 @@
           showLoginPhone(){
               this.isShowPhone = true
 
-              this.isShowEmail = false
+             // this.isShowEmail = false
+
+             // this.isShowRegistered = false;
           },
           //定义点击邮箱登录方法
           showLoginEmail(){
-              this.isShowPhone = false
-
+              //打开邮箱界面
               this.isShowEmail = true
+              //关闭手机登录页面
+             // this.isShowPhone = false
+
+
+              //关闭注册页面
+             // this.isShowRegistered = false;
           },
           //定义点击更换的登录方式。
           anywayLogin(){
+              //关闭所有其他页面
               this.isShowPhone = false
-
+              this.isShowEmail = false
               this.isShowEmail = false
           },
           //定义点击跳转主页方法
           goToShouye(){
               this.$router.push('/home');
+          },
+          //定义点击跳转手机号注册界面
+          showRegistered(){
+              this.isShowRegistered = true;
+//              this.isShowPhone = false
+//
+//              this.isShowEmail = false
+          },
+          //手机失去焦点时触发得事件
+          loseBlur11(){
+
+                  this.isShowYanzhengPhone = !this.regPhone.test(this.value);
+
+
+          },
+          //邮箱失去焦点时触发得事件。
+          loseEmailBlur(){
+              this.isShowYanzhengPhone = !this.regPhone.test(this.value);
+          },
+          //当输入框获得焦点得事件
+          getBlur22(){
+              this.isShowYanzhengPhone = false;
+          },
+          //点击获取验证码
+          getYanzheng(){
+              this.dis = true;
+              this.timerId = setInterval(()=>{
+                  this.time--;
+                  if(this.time===0){
+                      this.dis = false;
+                      this.time= 10;
+                      clearInterval(this.timerId)
+                  }
+
+              },1000);
           }
       }
   }
@@ -244,6 +305,10 @@
                     font-size 28px
                     color #7f7f7f
                     margin-top 10px
+                .yanzhengText
+                    font-size 24px
+                    color #b4282d
+
                 span:last-child
                     float right
                     color #666

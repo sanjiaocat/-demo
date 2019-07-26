@@ -51,7 +51,7 @@
         position fixed
         left 0
         bottom 0px
-        background pink
+        background #fff
         z-index 5
         align-items center
         .home

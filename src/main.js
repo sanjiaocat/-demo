@@ -7,6 +7,8 @@ import './mockData/mockServer'
 
 Vue.config.productionTip = false
 
+
+
 new Vue({
   render: h => h(App),    //注册组件
   router,             //注册路由器

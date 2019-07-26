@@ -12,8 +12,7 @@
            <!--z左侧列表列-->
            <div class="list-left">
                <ul class="left-listWrap">
-                   <li class="left-listItem" v-for=" category in categoryList" :key="category.id">{{category.name}}</li>
-
+                   <li class="left-listItem" :class="{active:thisIndex===index}" v-for=" (category,index) in categoryList" :key="category.id" @click="getIndex1(index)">{{category.name}}</li>
                </ul>
            </div>
            <!--右侧辅导航列表-->
@@ -22,8 +21,8 @@
                    <div class="list-rightHeader">
                        <img src="https://yanxuan.nosdn.127.net/cb225335d4a438564040f00b448e8db8.png?imageView&thumbnail=0x196">
                    </div>
-                   <ul class="list-rightList" v-if="categoryList">
-                       <li class="list-rightItem" v-for="subCate in categoryList[0].subCateList" :key="subCate.id">
+                   <ul class="list-rightList" v-if="rightArr">
+                       <li class="list-rightItem" v-for="subCate in rightArr.subCateList" :key="subCate.id">
                            <img :src="subCate.wapBannerUrl">
                            <div class="list-rightItemText">{{subCate.name}}</div>
                        </li>
@@ -45,20 +44,41 @@
   export default{
       data(){
           return{
-
+            rightArr:[],           //初始化右边点击时列表得值
+            thisIndex:0
           }
       },
-      //获取更新第二页导航数据
+
       mounted(){
+          //获取更新第二页导航数据
           this.$store.dispatch('getCategoryList').then(res =>{
-              let wrapper = document.querySelector('.list-right')
-              let wrapper2 = document.querySelector('.list-left')
-              new Bscroll(wrapper)
-              new Bscroll(wrapper2)
+              this.rightArr = this.categoryList[0];
+              this.$nextTick(()=>{
+                  let wrapper = document.querySelector('.list-right')
+
+                  let wrapper2 = document.querySelector('.list-left')
+                  new Bscroll(wrapper)
+
+                  new Bscroll(wrapper2,{
+                      click:true
+                  })
+
+
+              })
+
           })
 
 
 
+      },
+      methods:{
+          getIndex1(index){
+            this.thisIndex = index;
+            this.rightArr = this.categoryList[index]
+           //console.log(this.rightArr)
+
+
+          }
       },
 
       computed:{
@@ -134,7 +154,9 @@
                         white-space nowrap
                         text-overflow ellipsis
                         margin-top 30px
-
+                    .active
+                        color red
+                        border-left 1px solid red
 
 
             .list-right

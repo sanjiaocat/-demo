@@ -6,7 +6,7 @@
 /**
  * Created by 54950 on 2019/7/21.
  */
-import {reqHomeData,reqcategoryList} from '../api';
+import {reqHomeData,reqcategoryList,reqfindTj,reqFindMore} from '../api';
 
 export default {
 
@@ -15,8 +15,9 @@ export default {
     const result = await reqHomeData();
     if (result.code===0){
         const kingKongList = result.data.kingKongModule.kingKongList
+        const personalShop = result.data.personalShop
         //使用commit方法调用mutations里面的方法间接修改  导航列表的数据
-        commit('setHomeNavList',kingKongList);
+        commit('setHomeNavList',{kingKongList,personalShop});
     }
 
 
@@ -26,9 +27,32 @@ export default {
 
         const result = await reqcategoryList();
         if(result.code===0){
-            console.log(result)
+
             const categoryList = result.data
             commit('setCategoryList',categoryList)
+            console.log(categoryList)
         }
+    },
+
+    //获取和调用保存 发现页 的数据
+    async getFindTj({commit}){
+        const result = await reqfindTj()
+        if(result.data.code === '200'){
+            const findTjList = result.data.data;
+            commit('setFindTj',findTjList)
+        }
+    },
+    //发现页上啦获取更多数据
+    async getFindMore({commit},{page,size}){
+
+        const result = await reqFindMore(page,size);
+
+        if (result.code==='200'){
+            const findMoreList = result.data.result;
+
+            commit('setFindMoreList',findMoreList);
+        }
+
     }
+
 }

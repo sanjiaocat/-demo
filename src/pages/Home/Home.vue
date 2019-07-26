@@ -1,12 +1,12 @@
 <template>
 
-   <div id="home">
+   <div id="home" @touchmove="aaaaaaa">
        <!--头部结构-->
        <div class="homeHeader">
            <!--首页搜索最上边-->
            <div class="homeSearch">
                <div class="title"></div>
-               <div class="search">
+               <div class="search" @click="goToSearch">
                    <i class="searchi"></i>
                    <span>搜索商品, 共21816款好物</span>
                </div>
@@ -15,48 +15,41 @@
            <!--横向导航-->
            <div class="headerNav">
                <!--首页头部横向导航-->
-               <div class="header-left" v-if="isShow">
+               <div class="header-left" v-show="isShow">
                    <ul class="headernavList">
-                       <li class="headernavItem a"><span>推荐</span></li>
-                       <li class="headernavItem"><span>居家生活</span></li>
-                       <li class="headernavItem"><span>服饰鞋包</span></li>
-                       <li class="headernavItem"><span>美食酒水</span></li>
-                       <li class="headernavItem"><span>个护清洁</span></li>
-                       <li class="headernavItem"><span>母婴亲子</span></li>
-                       <li class="headernavItem"><span>运动旅行</span></li>
-                       <li class="headernavItem"><span>数码家电</span></li>
-                       <li class="headernavItem"><span>全球特色</span></li>
+                       <li class="headernavItem" :class="{active:navlistIndex===index}" v-for="(nav,index) in navLists"  @click="activeChange(index)"><span>{{nav}}</span></li>
+
                    </ul>
                </div>
 
                <!--点击出现的全部频道-->
-               <div class="clickNav" v-if="!isShow">全部频道</div>
+               <div class="clickNav" v-show="!isShow">全部频道</div>
 
                <!--首页头部点击旋转箭头-->
-               <transition name="routed">
-                   <div class="iconfont icon-up" @click="isShowmasetList"></div>
-               </transition>
+
+               <div class="iconfont icon-up" @click="isShowmasetList" :class="{activeMast:isShow}"></div>
+
 
                <!--全部列表的所有项-->
                <div class="mastList" v-if="!isShow">
                    <ul class="mastList-s">
-                       <li class="listItem"> 推荐</li>
-                       <li class="listItem"> 居家生活</li>
-                       <li class="listItem"> 服饰鞋包</li>
-                       <li class="listItem"> 美食酒水</li>
-                       <li class="listItem"> 个护清洁</li>
-                       <li class="listItem"> 母婴亲子</li>
-                       <li class="listItem"> 运动旅行</li>
-                       <li class="listItem"> 数码家电</li>
-                       <li class="listItem"> 全球特色</li>
+                       <li class="listItem" :class="{active:navlistIndex===0}"> 推荐</li>
+                       <li class="listItem" :class="{active:navlistIndex===1}"> 居家生活</li>
+                       <li class="listItem" :class="{active:navlistIndex===2}"> 服饰鞋包</li>
+                       <li class="listItem" :class="{active:navlistIndex===3}"> 美食酒水</li>
+                       <li class="listItem" :class="{active:navlistIndex===4}"> 个护清洁</li>
+                       <li class="listItem" :class="{active:navlistIndex===5}"> 母婴亲子</li>
+                       <li class="listItem" :class="{active:navlistIndex===6}"> 运动旅行</li>
+                       <li class="listItem" :class="{active:navlistIndex===7}"> 数码家电</li>
+                       <li class="listItem" :class="{active:navlistIndex===8}"> 全球特色</li>
                    </ul>
                </div>
-               <div class="mast"></div>
-
+               <div class="mast" v-if="!isShow">
+               </div>
            </div>
        </div>
        <!--轮播图-->
-       <div class="swiper-container">
+       <div class="swiper-container" id="swiper1">
 
            <div class="swiper-wrapper">
                <div class="swiper-slide">
@@ -171,6 +164,19 @@
                <div>9.9元起</div>
            </li>
        </ul>
+       <!--私人定制-->
+       <div class="swiper-container" id="swiper2">
+           <div class="swiper-wrapper">
+               <div class="swiper-slide" v-for="(items,index) in personalShoplist" :key="index">
+                   <div class="seiperWrapimg" v-for="(item,index) in items" :key="index">
+                       <img :src="item.listPicUrl">
+                   </div>
+               </div>
+
+           </div>
+           <!-- 如果需要分页器 -->
+           <div class="swiper-pagination"></div>
+       </div>
 
 
        <div id="aaaaa">
@@ -203,63 +209,126 @@
   export default{
       data(){
           return{
-              isShow:true
+              isShow:true,        //定义遮罩层是否显示    true为不显示
+              navLists:[          //横向导航数据
+                  '推荐',
+                  '居家生活',
+                  '服饰鞋包',
+                  '美食酒水',
+                  '个护清洁',
+                  '母婴亲子',
+                  '运动旅行',
+                  '数码家电',
+                  '全球特色'
+              ],
+              navlistIndex:0,         //点击时当前横向导航选项的index索引
+              flag:true
           }
       },
       methods:{
           //定义点击切换蒙板的事件
           isShowmasetList(){
               this.isShow = !this.isShow;
+          },
+          //定义切换横向导航高亮的事件
+          activeChange(index){
+              this.navlistIndex = index;
+              console.log(index)
+          },
+          //跳转search页面
+          goToSearch(){
+              this.$router.push('/search');
+          },
+
+
+          aaaaaaa(event){
+              if(!this.flag){
+                  return
+              }
+              this.flag = false;
+              this.qwer = setTimeout(()=>{
+                  console.log(event.targetTouches[0].clientX)
+                  this.flag = true;
+              },500)
+
           }
+
       },
     mounted(){
         //加载头部导航横向滚动
         let wraper = document.querySelector('.header-left')
         new BScroll(wraper,{
             scrollX: true,
+            click:true              //better库会禁止原生的事件，更改设置可以点击
         })
 
-        //加载轮播图初始化
-        var mySwiper = new Swiper ('.swiper-container', {
-            loop: true, // 循环模式选项
-
-            pagination: {
-                el: '.swiper-pagination',
-                type: 'custom',
-
-                //设置另类的分页器的样式
-//                renderCustom: function(swiper, current, total) {
-//                     return current + ' of ' + total;
-//                }
-               // bulletClass : 'my-swiper-pagination-custom',
-
-
-//                设置样式为 长条的样式。
-                renderCustom: function (swiper, current, total) {
-                    var customPaginationHtml = "";
-                    for(var i = 0; i < total; i++) {
-                        //判断哪个分页器此刻应该被激活
-                        if(i == (current - 1)) {
-                            customPaginationHtml += '<span class="swiper-pagination-customs swiper-pagination-customs-active"></span>';
-                        } else {
-                            customPaginationHtml += '<span class="swiper-pagination-customs"></span>';
-                        }
-                    }
-                    return customPaginationHtml;
-                }
-            }
-
-
-
-
-        })
 
 
         //获取加载导航数据
-        this.$store.dispatch('getHomeNavList')
+        this.$store.dispatch('getHomeNavList').then(()=>{
+            this.$nextTick(()=>{
+                //加载轮播图初始化
+                var mySwiper = new Swiper ('#swiper1', {
+                    loop: true, // 循环模式选项
+                    pagination: {
+                        el: '.swiper-pagination',
+                        type: 'custom',
+                        //设置另类的分页器的样式
+//                renderCustom: function(swiper, current, total) {
+//                     return current + ' of ' + total;
+//                }
+                        // bulletClass : 'my-swiper-pagination-custom',
+//                设置样式为 长条的样式。
+                        renderCustom: function (swiper, current, total) {
+                            var customPaginationHtml = "";
+                            for(var i = 0; i < total; i++) {
+                                //判断哪个分页器此刻应该被激活
+                                if(i == (current - 1)) {
+                                    customPaginationHtml += '<span class="swiper-pagination-customs swiper-pagination-customs-active"></span>';
+                                } else {
+                                    customPaginationHtml += '<span class="swiper-pagination-customs"></span>';
+                                }
+                            }
+                            return customPaginationHtml;
+                        }
+                    }
+                })
+                //        加载私人定制轮播图
+                var mySwiper2 = new Swiper('#swiper2',{
+                    loop: true, // 循环模式选项
+                    // 如果需要分页器
+                    pagination: {
+                        el: '.swiper-pagination',
+                    },
+                })
+            })
+        })
     },
     computed:{
-        ...mapState(['kingKongList'])
+        ...mapState(['kingKongList','personalShop']),
+        //二维数组列表
+        personalShoplist(){
+            const {personalShop} = this;
+            let bigArr = [];
+            let smallAll = [];
+            personalShop.forEach(item=>{
+                //如果小数组为空 就把他添加进大数组中。
+                if (smallAll.length===0){
+                    bigArr.push(smallAll);
+                }
+                //往大数组中得小数组添加数据
+                smallAll.push(item)
+                //如果小数组得值长度为3，就从新创建一个小数组， 上面会把他添加进大数组中
+                if (smallAll.length===3){
+                    smallAll = [];
+                }
+
+
+            })
+            //console.log(bigArr)
+            return bigArr;
+
+        }
     }
   }
 </script>
@@ -278,7 +347,7 @@
             position fixed
             left 0px
             top 0
-            z-index 6
+            z-index 10
             background white
             .homeSearch
                 wdith 750px
@@ -329,8 +398,8 @@
                     color #b4282d
                     font-weight normal
                     vertical-align baseline
-                    border 1px solid #b4282d
-
+                    border 2px solid #b4282d
+                    border-radius 4px
                     box-sizing border-box
                     padding-left 15px
                     white-space nowrap
@@ -360,14 +429,20 @@
                             height 60px
                             font-size 28px
                             color #333
-                            padding 16px
-                            &.a
+                            padding 8px 16px
+                            box-sizing border-box
+
+                            &.active
+                                border-bottom 1px solid red
+                                color red
+                            &:first-child
                                 width 88px
 
-                /*<!--点击出现的全部频道-->*/
+                /*<!--点击出现的  全部频道 -->*/
                 .clickNav
                     width 650px
                     height 60px
+                    margin-right 20px
                     line-height 60px
                     box-sizing border-box
                     padding-left 40px
@@ -392,23 +467,29 @@
                             line-height 56px
                             text-align center
                             font-size 24px
-
-
+                            &.active
+                                  border-bottom 1px solid red
+                                  color red
 
                 .iconfont
                     width 60px
                     height 60px
-
                     text-align center
                     line-height 60px
-                    &.routed-enter-active,&.routed-leave-active
-                        transition .5s
-                    &.routed-enter,&.routed-leave-to
-                        transform rotate(180deg)
+                    transition .5s
+                    &.activeMast
+                        transform rotate(-180deg)
+                .mast
+                    width 100%
+                    height 1000px
+                    background black
+                    opacity 0.7
+
+
 
 
 //       轮播图样式
-        .swiper-container
+        #swiper1
             width 750px
             height 370px
             background #f9f9f9
@@ -663,6 +744,25 @@
 
                 background-image url('//yanxuan-static.nosdn.127.net/hxm/yanxuan-wap/p/20161201/style/img/icon-normal/goToTop-f502426678.png')
                 background-size 100% 100%
+
+
+        /*私人定制*/
+        #swiper2
+            width 750px
+            height 570px
+            background #f9f9f9
+            .swiper-wrapper
+                .swiper-slide
+                    width 100%
+                    height 100%
+                    display flex
+                    justify-content space-around
+                    .seiperWrapimg
+                        width 200px
+                        height 550px
+                        img
+                            width 100%
+                            height 100%
 
 
 </style>
